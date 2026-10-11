@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net6.0</TargetFramework><Version>0.1.0</Version><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><CheckEolTargetFramework>false</CheckEolTargetFramework><GameRoot Condition="'$(GameRoot)'==''">C:\Program Files (x86)\Steam\steamapps\common\Pathless Woods</GameRoot><FrameworkDll Condition="'$(FrameworkDll)'==''">$(MSBuildThisFileDirectory)..\..\src\PathlessWoodsModFramework\bin\Release\net6.0\PathlessWoodsModFramework.dll</FrameworkDll></PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PathlessWoodsModFramework"><HintPath>$(FrameworkDll)</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Core"><HintPath>$(GameRoot)\BepInEx\core\BepInEx.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx.Unity.IL2CPP"><HintPath>$(GameRoot)\BepInEx\core\BepInEx.Unity.IL2CPP.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Il2CppInterop.Runtime"><HintPath>$(GameRoot)\BepInEx\core\Il2CppInterop.Runtime.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(GameRoot)\BepInEx\interop\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+</Project>
