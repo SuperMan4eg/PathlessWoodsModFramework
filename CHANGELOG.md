@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.2
+
+- Keep the Mods caption correct in pause menus that use legacy text widgets.
+
+- Match the Mods launcher to native menu buttons. Place it between Settings and Exit in the main menu and within the pause menu button list.
+- Translate known story lines at the dialogue input before typewriter animation and apply plant growth-stage names at rendering.
+- Apply installed language packs to story dialogue, quest titles, quest objectives and camera instructions before text animation and item substitutions.
+- Resolve reported inline English tutorial variants for installed language packs.
+- Support translation of the official player-group contact footer.
+- Cache inline translations to avoid repeated full dictionary searches.
+
+
 ## 0.1.1
 
 - Place the Mods launcher above the QQ group numbers, leaving the native social button accessible.

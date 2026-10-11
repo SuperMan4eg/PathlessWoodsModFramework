@@ -25,15 +25,16 @@ internal sealed class ModsMenuController:MonoBehaviour
         {
             next=Time.unscaledTime+.5f;
             var start=UIObjectCache.Active<GameStartUI>().FirstOrDefault(x=>Visible(x.ButtonsNode));
-            available=start is not null || UIObjectCache.Active<GamePauseUI>().Any(x=>Visible(x.BtnEscape));
+            var pause=UIObjectCache.Active<GamePauseUI>().FirstOrDefault(x=>Visible(x.BtnEscape));
+            available=start is not null || pause is not null;
+            if(start is not null)NativeModsLauncher.EnsureMain(start);
+            if(pause is not null)NativeModsLauncher.EnsurePause(pause);
             if(View is null && available)
             {
                 var font=UIObjectCache.Active<TextMeshProUGUI>().Select(x=>x.font).FirstOrDefault(x=>x!=null);
                 if(font is not null)View=new ModsMenuView(font);
             }
             View?.SetAvailable(available);
-            if(View is not null && available)
-                View.PlaceLauncherAbove(start is null?Array.Empty<TMP_Text>():start.GetComponentsInChildren<TMP_Text>().Where(x=>Visible(x.gameObject)));
         }
         if(View is not null && available && Input.GetKeyDown(KeyCode.F6)){if(View.IsOpen)View.Close();else View.Open();}
         if(View?.IsOpen==true && Input.GetKeyDown(KeyCode.Escape))View.Close();

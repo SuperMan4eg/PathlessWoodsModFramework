@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net6.0</TargetFramework><Version>0.1.1</Version><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableNETAnalyzers>true</EnableNETAnalyzers><CheckEolTargetFramework>false</CheckEolTargetFramework><GameRoot Condition="'$(GameRoot)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Pathless Woods</GameRoot></PropertyGroup>
+  <PropertyGroup><TargetFramework>net6.0</TargetFramework><Version>0.1.2</Version><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableNETAnalyzers>true</EnableNETAnalyzers><CheckEolTargetFramework>false</CheckEolTargetFramework><GameRoot Condition="'$(GameRoot)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Pathless Woods</GameRoot></PropertyGroup>
   <ItemGroup>
     <Compile Remove="Artifacts/**/*.cs" />
     <Reference Include="SemanticVersioning"><HintPath>$(GameRoot)\BepInEx\core\SemanticVersioning.dll</HintPath><Private>false</Private></Reference>

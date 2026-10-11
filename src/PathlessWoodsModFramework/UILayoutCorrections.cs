@@ -1,4 +1,4 @@
-﻿using AniYa.UI;
+using AniYa.UI;
 using AniYa;
 using TMPro;
 using UnityEngine;

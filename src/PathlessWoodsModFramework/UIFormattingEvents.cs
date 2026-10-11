@@ -37,6 +37,7 @@ internal sealed class UIFormattingEvents:MonoBehaviour
     {if(__0==CanvasUpdate.PreRender)BeforeMesh(__instance);}
     private static void BeforeMesh(TextMeshProUGUI __instance)
     {
+        SourceTextTranslations.PlantMesh(__instance);
         if(processing || !Localization.HasLanguage(Localization.CurrentLanguage) || !ReportedControlLayout.IsTargeted(__instance))return;
         processing=true;
         try{ReportedControlLayout.ApplyEvent(__instance);}

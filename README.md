@@ -1,10 +1,10 @@
-# Pathless Woods Mod Framework 0.1.1
+# Pathless Woods Mod Framework 0.1.2
 
 A framework for independent Pathless Woods mods, including an in-game mods menu, configuration editing, mod registration and localization services. This version targets Steam build 25836294, Windows x64 Unity2022.3.62f3 IL2CPP. Complete gameplay compatibility is not claimed.
 
 Requires BepInEx Unity IL2CPP x64 6.0.0-be.788+5b766a3, installed separately. Russian Localization is an optional, separately installed language pack.
 
-Copy the included BepInEx directory into the game directory. In the main menu or pause menu, click Mods above the QQ group numbers at the right or press F6. Search installed plugins, inspect their versions and descriptions, and edit supported BepInEx settings. Apply saves a value; R restores its default. Values outside declared ranges/lists are rejected. Some mods require a restart to apply settings. Types the menu cannot edit are displayed read-only. The menu discovers plugins even when they do not register with the framework.
+Copy the included BepInEx directory into the game directory. In the main menu, click Mods between Settings and Exit, or use the matching Mods button in the pause menu. F6 also opens the menu. Search installed plugins, inspect their versions and descriptions, and edit supported BepInEx settings. Apply saves a value; R restores its default. Values outside declared ranges/lists are rejected. Some mods require a restart to apply settings. Types the menu cannot edit are displayed read-only. The menu discovers plugins even when they do not register with the framework.
 
 The interface supports English and Russian. Closing the menu restores cursor visibility and lock state. The menu does not unload or enable plugins during play.
 
@@ -15,6 +15,8 @@ To uninstall, remove dependent mods first, then remove BepInEx/plugins/PathlessW
 To hide the BepInEx console, set Enabled = false in the [Logging.Console] section of BepInEx/config/BepInEx.cfg and restart the game. File logging remains available in BepInEx/LogOutput.log. Set Enabled = true to restore the console.
 
 Source and SDK example: https://github.com/SuperMan4eg/PathlessWoodsModFramework (MIT license).
+
+
 
 
 ## Building from source

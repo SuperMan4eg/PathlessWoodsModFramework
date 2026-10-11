@@ -8,7 +8,7 @@ namespace PathlessWoodsModFramework;
 internal sealed class ModsMenuView
 {
     private readonly TMP_FontAsset font;
-    private readonly GameObject root,window,launcher;
+    private readonly GameObject root,window;
     private readonly RectTransform panel;
     private readonly List<GameObject> dynamicRows=new();
     private readonly TMP_Text title,detail,status,pageLabel;
@@ -28,8 +28,6 @@ internal sealed class ModsMenuView
         root=new GameObject("PathlessWoodsModsMenu");var canvas=root.AddComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=30000;root.AddComponent<GraphicRaycaster>();
         var scaler=root.AddComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;scaler.matchWidthOrHeight=.5f;
         UnityEngine.Object.DontDestroyOnLoad(root);
-        launcher=Button(root.transform,"ModsLauncher",T("Mods [F6]","Моды [F6]"),new Vector2(130,40),new Vector2(-85,36),Open).gameObject;
-        var launchRect=launcher.GetComponent<RectTransform>();launchRect.anchorMin=launchRect.anchorMax=new Vector2(1,0);
         window=Box(root.transform,"Modal",new Vector2(1280,720),Vector2.zero,new Color(0,0,0,.68f)).gameObject;
         var modal=window.GetComponent<RectTransform>();modal.anchorMin=Vector2.zero;modal.anchorMax=Vector2.one;modal.offsetMin=modal.offsetMax=Vector2.zero;
         panel=Box(window.transform,"ModsPanel",new Vector2(1040,620),Vector2.zero,new Color(.055f,.09f,.09f,.99f));
@@ -46,33 +44,12 @@ internal sealed class ModsMenuView
         window.SetActive(false);
     }
     internal void SetAvailable(bool available)
-    {launcher.SetActive(available);if(!available && IsOpen)Close();}
-    internal void PlaceLauncherAbove(IEnumerable<TMP_Text> captions)
-    {
-        var rootRect=root.GetComponent<RectTransform>();
-        float height=160;
-        foreach(var caption in captions)
-        {
-            if(!caption.text.Contains("QQ",StringComparison.OrdinalIgnoreCase))continue;
-            var corners=new Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector3>(4);
-            caption.rectTransform.GetWorldCorners(corners);
-            var canvas=caption.GetComponentInParent<Canvas>();
-            var camera=canvas is not null && canvas.renderMode!=RenderMode.ScreenSpaceOverlay?canvas.worldCamera:null;
-            for(int i=0;i<4;i++)
-            {
-                var screen=RectTransformUtility.WorldToScreenPoint(camera,corners[i]);
-                if(RectTransformUtility.ScreenPointToLocalPointInRectangle(rootRect,screen,null,out var point))
-                    height=Math.Max(height,point.y+rootRect.rect.height*.5f+32);
-            }
-        }
-        launcher.GetComponent<RectTransform>().anchoredPosition=new Vector2(-85,Math.Min(height,rootRect.rect.height-36));
-    }
+    {if(!available && IsOpen)Close();}
     internal void Open()
     {
         if(IsOpen)return;
         mods=ModRegistry.GetInstalled();cursorVisible=Cursor.visible;cursorLock=Cursor.lockState;Cursor.visible=true;Cursor.lockState=CursorLockMode.None;
         window.SetActive(true);title.text=T("Mods","Моды");
-        launcher.GetComponentInChildren<TMP_Text>().text=T("Mods [F6]","Моды [F6]");
         status.text=T("Settings are saved when applied. A mod may require a restart.","Настройки сохраняются при применении. Моду может требоваться перезапуск.");
         if(string.IsNullOrEmpty(selectedId))selectedId=mods.FirstOrDefault()?.Description.Id??"";
         Render();

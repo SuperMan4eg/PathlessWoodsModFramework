@@ -1,4 +1,4 @@
-# Framework API v1 (0.1.1)
+# Framework API v1 (0.1.2)
 
 Target: Pathless Woods Steam25836294, Unity2022.3.62f3 IL2CPP, Windows x64. Use BepInEx Unity IL2CPP6.0.0-be.788+5b766a3 and .NET6. The framework is a foundation for mods, not a general save-game or multiplayer API.
 

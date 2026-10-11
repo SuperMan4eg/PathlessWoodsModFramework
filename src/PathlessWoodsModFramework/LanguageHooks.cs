@@ -14,10 +14,16 @@ internal static class LanguageHooks
             prefix:prefix ? new HarmonyMethod(typeof(LanguageHooks),hook) : null,
             postfix:prefix ? null : new HarmonyMethod(typeof(LanguageHooks),hook));
         Patch(typeof(LocalizationBinaryTool),nameof(LocalizationBinaryTool.Load),nameof(BaseCatalog),true);
+        Patch(typeof(LocalizationBinaryTool),nameof(LocalizationBinaryTool.Load),nameof(CatalogLoaded));
         Patch(typeof(GameSettingData),nameof(GameSettingData.GetUserLanguage),nameof(SelectedLanguage),true);
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetText),nameof(TextLookup),true);
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetPopup),nameof(PopupLookup),true);
+        Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetEarthGodSayingWord),nameof(StoryDialogueLookup),true);
+        Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetTaskName),nameof(TaskNameLookup),true);
+        Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetTaskTargetDecs),nameof(TaskTargetLookup),true);
+        Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetGuideLantern),nameof(GuideInstructionLookup),true);
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetUnitName),nameof(UnitNameLookup),true);
+        Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetPlantName),nameof(PlantNameResolved));
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetRandomName),nameof(RandomNameLookup),true);
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetNpcDialog),nameof(NpcGroupDialogLookup),true);
         Patch(typeof(MultiLangManager),nameof(MultiLangManager.GetUnitDescript),nameof(UnitDescriptionLookup),true);
@@ -63,6 +69,8 @@ internal static class LanguageHooks
         }
     }
     private static void BaseCatalog(ref UserLanguage __0) { if(Localization.HasLanguage((int)__0)) __0=(UserLanguage)2; }
+    private static void CatalogLoaded()=>SourceTextTranslations.Invalidate();
+    private static void PlantNameResolved(ref string __result)=>__result=SourceTextTranslations.Resolve(__result);
     private static bool SelectedLanguage(GameSettingData __instance,ref UserLanguage __result)
     {
         if(!Localization.HasLanguage((int)__instance.GameLanguage)) return true;
@@ -96,6 +104,10 @@ internal static class LanguageHooks
     }
     private static bool RoleDescriptionLookup(string __0,ref string __result) => LookupRegisteredSection(9,__0,ref __result);
     private static bool CategoryLookup(string __0,ref string __result) => LookupRegisteredSection(10,__0,ref __result);
+    private static bool StoryDialogueLookup(string __0,ref string __result) => LookupRegisteredSection((int)LocSectionId.TaskDialog,__0,ref __result);
+    private static bool TaskNameLookup(string __0,ref string __result) => LookupRegisteredSection((int)LocSectionId.TaskName,__0,ref __result);
+    private static bool TaskTargetLookup(string __0,ref string __result) => LookupRegisteredSection((int)LocSectionId.TaskTargetDesc,__0,ref __result);
+    private static bool GuideInstructionLookup(string __0,ref string __result) => LookupRegisteredSection((int)LocSectionId.GuideLantern,__0,ref __result);
     private static bool LookupRegisteredSection(int section,string key,ref string result)
     {
         int language=Localization.CurrentLanguage;

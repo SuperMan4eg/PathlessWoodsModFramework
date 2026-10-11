@@ -1,4 +1,4 @@
-﻿using AniYa;
+using AniYa;
 using AniYa.UI;
 using AniYa.UI.Craft;
 using AniYa.Template;
@@ -11,12 +11,16 @@ internal static class RenderedTextHooks
     internal static void Install(Harmony h)
     {
         UIFormattingEvents.Install(h);
+        foreach(var arguments in new[]{new[]{typeof(string),typeof(string)},new[]{typeof(string),typeof(bool)}})
+            h.Patch(AccessTools.Method(typeof(DialogueText),nameof(DialogueText.AppendLine),arguments),prefix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(DialogueLine)));
+        h.Patch(AccessTools.PropertySetter(typeof(DialogueText),"Content"),prefix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(DialogueLine)));
         h.Patch(AccessTools.Method(typeof(TextResize),nameof(TextResize.Refresh)),postfix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(RefreshedCaption)));
         h.Patch(AccessTools.Method(typeof(UserManualContentItem),nameof(UserManualContentItem.RefreshText)),prefix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(ManualText)),finalizer:new HarmonyMethod(typeof(RenderedTextHooks),nameof(RestoreManualSource)));
         h.Patch(AccessTools.Method(typeof(GameStartUI),nameof(GameStartUI.RefreshNoticeText)),prefix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(NoticeLanguage)),postfix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(NoticeText)),finalizer:new HarmonyMethod(typeof(RenderedTextHooks),nameof(RestoreNoticeLanguage)));
         h.Patch(AccessTools.Method(typeof(TechLinkTooltipUI),nameof(TechLinkTooltipUI.Show)),prefix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(ConstructionHint)),postfix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(TooltipLayout)));
         h.Patch(AccessTools.Method(typeof(OperationTipsUI),nameof(OperationTipsUI.Update)),postfix:new HarmonyMethod(typeof(RenderedTextHooks),nameof(OperationHelpPosition)));
     }
+    private static void DialogueLine(ref string __0)=>__0=SourceTextTranslations.Resolve(__0);
     private static void RefreshedCaption(TextResize __instance)
     {
         CaptionLayoutState.Apply(__instance);

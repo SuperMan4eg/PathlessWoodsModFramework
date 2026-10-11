@@ -10,6 +10,7 @@ internal sealed record LanguagePack(string ModId, string DisplayName, int Langua
 public static class Localization
 {
     internal static readonly SortedDictionary<string, LanguagePack> Packs = new(StringComparer.Ordinal);
+    private static readonly Dictionary<(int Language,string Text),string> InlineTranslations = new();
     internal static ManualLogSource? Log;
     public static void RegisterLanguage(string modId, string displayName, int nativeLanguageId, IEnumerable<Translation> translations)
     {
@@ -19,6 +20,11 @@ public static class Localization
         if (entries.Any(t => string.IsNullOrEmpty(t.Key) || t.Value is null)) throw new ArgumentException("Invalid translation.");
         if (entries.Select(t => (t.Section,t.Parent,t.Key)).Distinct().Count() != entries.Length) throw new ArgumentException("Duplicate translation key.");
         if (!Packs.TryAdd(modId, new(modId,displayName,nativeLanguageId,entries))) throw new InvalidOperationException($"Already registered: {modId}");
+        InlineTranslations.Clear();
+        SourceTextTranslations.Invalidate();
+        foreach(var pack in Packs.Values)
+            foreach(var entry in pack.Entries)
+                if(entry.Section==1 && entry.Parent is null)InlineTranslations[(pack.LanguageId,entry.Key)]=entry.Value;
         Log?.LogInfo($"Registered language {displayName} id={nativeLanguageId}: {entries.Length} translations");
     }
     internal static bool HasLanguage(int language) => Packs.Values.Any(p => p.LanguageId == language);
@@ -34,18 +40,19 @@ public static class Localization
     internal static string ResolveInline(string? chinese, string? english)
     {
         int language = CurrentLanguage;
-        if (chinese is not null && TryTranslation(language,1,chinese,null,out var translated)) return translated;
+        if (chinese is not null && InlineTranslations.TryGetValue((language,chinese),out var translated)) return translated;
+        if (english is not null && InlineTranslations.TryGetValue((language,english),out var alias)) return alias;
         return english ?? chinese ?? "";
     }
 }
-[BepInPlugin(Id,"Pathless Woods Mod Framework","0.1.1")]
+[BepInPlugin(Id,"Pathless Woods Mod Framework","0.1.2")]
 public sealed class FrameworkPlugin : BasePlugin
 {
     public const string Id = "superman4eg.pathlesswoods.framework";
     public override void Load()
     {
         Localization.Log=Log;
-        ModRegistry.Register(new(Id,"Pathless Woods Mod Framework","0.1.1","Mod discovery, in-game settings and localization services.","SuperMan4eg"));
+        ModRegistry.Register(new(Id,"Pathless Woods Mod Framework","0.1.2","Mod discovery, in-game settings and localization services.","SuperMan4eg"));
         FontSupport.EnableCyrillicFallback();
         AddComponent<FrameworkDispatcher>();
         AddComponent<ModsMenuController>();
@@ -55,6 +62,7 @@ public sealed class FrameworkPlugin : BasePlugin
         AddComponent<ReportedControlLayout>();
         AddComponent<UIFormattingEvents>();
         LanguageHooks.Install(new Harmony(Id));
-        Log.LogInfo("Framework 0.1.1 initialized.");
+        NativeModsLauncher.Install(new Harmony(Id));
+        Log.LogInfo("Framework 0.1.2 initialized.");
     }
 }

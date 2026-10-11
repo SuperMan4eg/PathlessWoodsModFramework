@@ -1,4 +1,4 @@
-﻿using AniYa;
+using AniYa;
 using AniYa.UI;
 using AniYa.UI.Craft;
 using TMPro;
@@ -25,12 +25,24 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     private static void RememberLegacy(Text text)=>LegacyLayouts[text.GetInstanceID()]=(text.text,text.rectTransform.rect.width,Localization.CurrentLanguage);
     private static void ApplySystemCaption(TMP_Text text)
     {
+        if(Localization.HasLanguage(Localization.CurrentLanguage) && text.text.StartsWith("有任何问题欢迎联系我们",StringComparison.Ordinal))
+        {
+            var translated=Localization.ResolveInline(text.text,text.text);
+            if(translated!=text.text){SystemTexts[text.GetInstanceID()]=(text,text.text,translated);text.text=translated;}
+            return;
+        }
         if(Localization.CurrentLanguage!=5 || text.GetComponentInParent<GamePauseUI>() is null || !SystemCaptions.TryGetValue(text.text,out var value))return;
         SystemTexts[text.GetInstanceID()]=(text,text.text,value);
         text.text=value;CaptionLayoutState.Fit(text,30,true);
     }
     private static void ApplySystemLegacy(Text text)
     {
+        if(Localization.HasLanguage(Localization.CurrentLanguage) && text.text.StartsWith("有任何问题欢迎联系我们",StringComparison.Ordinal))
+        {
+            var translated=Localization.ResolveInline(text.text,text.text);
+            if(translated!=text.text){SystemLegacy[text.GetInstanceID()]=(text,text.text,translated);text.text=translated;}
+            return;
+        }
         if(Localization.CurrentLanguage!=5 || text.GetComponentInParent<GamePauseUI>() is null || !SystemCaptions.TryGetValue(text.text,out var value))return;
         SystemLegacy[text.GetInstanceID()]=(text,text.text,value);
         text.text=value;text.resizeTextForBestFit=true;text.resizeTextMaxSize=30;text.resizeTextMinSize=18;text.horizontalOverflow=HorizontalWrapMode.Wrap;
@@ -185,7 +197,7 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     {
         if(!Localization.HasLanguage(Localization.CurrentLanguage) || string.IsNullOrWhiteSpace(text.text))return false;
         string current=text.text;
-        if(current.StartsWith("QQ群",StringComparison.Ordinal) || current=="关注B站")
+        if(current.StartsWith("QQ群",StringComparison.Ordinal) || current=="关注B站" || current.StartsWith("有任何问题欢迎联系我们",StringComparison.Ordinal))
         {
             string value=Localization.ResolveInline(current,current);if(value!=current)text.text=value;
         }
@@ -209,7 +221,7 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     {
         if(!Localization.HasLanguage(Localization.CurrentLanguage) || string.IsNullOrWhiteSpace(text.text))return false;
         string current=text.text;
-        if(current.StartsWith("QQ群",StringComparison.Ordinal) || current=="关注B站")text.text=Localization.ResolveInline(current,current);
+        if(current.StartsWith("QQ群",StringComparison.Ordinal) || current=="关注B站" || current.StartsWith("有任何问题欢迎联系我们",StringComparison.Ordinal))text.text=Localization.ResolveInline(current,current);
         if(!Captions.TryGetValue(Compact(current),out var caption))return false;
         text.text=caption.Value;text.resizeTextMaxSize=Math.Max(14,text.fontSize);text.resizeTextMinSize=10;text.resizeTextForBestFit=true;
         text.horizontalOverflow=caption.Wrap?HorizontalWrapMode.Wrap:HorizontalWrapMode.Overflow;text.verticalOverflow=VerticalWrapMode.Truncate;
