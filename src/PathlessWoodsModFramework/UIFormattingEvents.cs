@@ -17,6 +17,7 @@ internal sealed class UIFormattingEvents:MonoBehaviour
     internal static void Install(Harmony h)
     {
         h.Patch(AccessTools.PropertySetter(typeof(TMP_Text),"text"),postfix:new HarmonyMethod(typeof(UIFormattingEvents),nameof(TextChanged)));
+        h.Patch(AccessTools.PropertySetter(typeof(Text),"text"),postfix:new HarmonyMethod(typeof(UIFormattingEvents),nameof(LegacyTextChanged)));
         foreach(string method in new[]{"OnEnable","OnRectTransformDimensionsChange"})
             h.Patch(AccessTools.Method(typeof(TextMeshProUGUI),method),postfix:new HarmonyMethod(typeof(UIFormattingEvents),nameof(TextChanged)));
         h.Patch(AccessTools.Method(typeof(TextMeshProUGUI),nameof(TextMeshProUGUI.Rebuild)),prefix:new HarmonyMethod(typeof(UIFormattingEvents),nameof(BeforeRender)));
@@ -31,12 +32,19 @@ internal sealed class UIFormattingEvents:MonoBehaviour
         h.Patch(AccessTools.Method(typeof(EquipmentBuffItem),nameof(EquipmentBuffItem.Set)),postfix:new HarmonyMethod(typeof(UIFormattingEvents),nameof(EquipmentChanged)));
     }
     private static void TextChanged(TMP_Text __instance)=>Schedule(__instance);
+    private static void LegacyTextChanged(Text __instance)
+    {
+        if(processing)return;
+        processing=true;
+        try{CraftingCaptionLayout.Apply(__instance);}finally{processing=false;}
+    }
     private static void SettingsShown(SettingUI __instance)
     {foreach(var text in __instance.GetComponentsInChildren<TMP_Text>(false))Schedule(text);}
     private static void BeforeRender(TextMeshProUGUI __instance,CanvasUpdate __0)
     {if(__0==CanvasUpdate.PreRender)BeforeMesh(__instance);}
     private static void BeforeMesh(TextMeshProUGUI __instance)
     {
+        CraftingCaptionLayout.Apply(__instance);
         SourceTextTranslations.PlantMesh(__instance);
         if(processing || !Localization.HasLanguage(Localization.CurrentLanguage) || !ReportedControlLayout.IsTargeted(__instance))return;
         processing=true;

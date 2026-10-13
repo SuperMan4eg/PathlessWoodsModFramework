@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.3
+
+- Improve translated conversations containing names, item names and line breaks.
+- Translate formatted crafting help and fit longer captions.
+- Keep the first letter visible in Russian Excellent and Normal gathering captions.
+- Restore the four cloud-conflict button labels when their text area collapses.
+- Keep API version 1 and provide an updated SDK example.
+
 ## 0.1.2
 
 - Keep the Mods caption correct in pause menus that use legacy text widgets.

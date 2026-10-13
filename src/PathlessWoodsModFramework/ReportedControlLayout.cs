@@ -47,9 +47,30 @@ internal sealed class ReportedControlLayout:MonoBehaviour
         SystemLegacy[text.GetInstanceID()]=(text,text.text,value);
         text.text=value;text.resizeTextForBestFit=true;text.resizeTextMaxSize=30;text.resizeTextMinSize=18;text.horizontalOverflow=HorizontalWrapMode.Wrap;
     }
+    private static bool IsCloudChoice(TMP_Text text) =>
+        text.GetComponentInParent<ConfirmUI>(true) is not null &&
+        CaptionLayoutState.Canonical(text.text) is "Облачная копия" or "Локальная копия" or "Проверить облако" or "Позже";
+    private static bool FitCloudChoice(TMP_Text text)
+    {
+        if (!IsCloudChoice(text)) return false;
+        var button = text.GetComponentInParent<Button>(true);
+        if (button is null || text.transform.parent != button.transform) return false;
+        // The native horizontal group uses the shrinking label's preferred width and can collapse it to zero.
+        // Keep this label out of that group and stretch it inside the already laid-out button instead.
+        var layout = text.GetComponent<LayoutElement>() ?? text.gameObject.AddComponent<LayoutElement>();
+        layout.ignoreLayout = true;
+        var rect = text.rectTransform;
+        rect.localScale = Vector3.one;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = new Vector2(button.name == "ButtonCancel" ? 84 : 12, 4);
+        rect.offsetMax = new Vector2(-12, -4);
+        return true;
+    }
     internal static void ExpandButtonCaption(TMP_Text text)
     {
-        var button=text.GetComponentInParent<Button>();if(button is null)return;
+        if(FitCloudChoice(text))return;
+        var button=text.GetComponentInParent<Button>(true);if(button is null)return;
         var control=button.transform.TryCast<RectTransform>();var parent=text.transform.parent;
         if(control is null || parent is null || control.rect.width<60)return;
         // Use the actual button's available area, not a tiny intermediate text holder.
@@ -76,6 +97,7 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     }
     internal static void ApplyEvent(TMP_Text text)
     {
+        CraftingCaptionLayout.Apply(text);
         ApplySystemCaption(text);
         if(text.GetComponentInParent<OtherBuffIcon>() is { } hud && hud.buffNameText==text)FitStatusEffect(text,hud.transform);
         else if(text.GetComponentInParent<BuffPreviewItem>() is { } preview && preview.buffNameText==text)FitStatusEffect(text,preview.transform);
@@ -89,7 +111,7 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     }
     private static bool IsSettingsHeading(TMP_Text text)=>CaptionLayoutState.Canonical(text.text) is "Настройки" or "Настройки игры";
     private static bool IsSettingsTab(TMP_Text text)=>CaptionLayoutState.Canonical(text.text) is "Общие" or "Графика" or "Управление" or "Звук" && (text.GetComponentInParent<Button>() is not null || text.GetComponentInParent<Toggle>() is not null || text.GetComponentInParent<SettingUI>() is not null);
-    internal static bool IsTargeted(TMP_Text text)=>text.GetComponentInParent<OtherBuffIcon>() is not null || text.GetComponentInParent<BuffPreviewItem>() is not null || text.GetComponentInParent<BuffItem>() is not null || text.GetComponentInParent<SettingUI>() is not null || text.GetComponentInParent<TMP_Dropdown>() is not null || IsSettingsHeading(text) || IsSettingsTab(text);
+    internal static bool IsTargeted(TMP_Text text)=>IsCloudChoice(text) || text.GetComponentInParent<OtherBuffIcon>() is not null || text.GetComponentInParent<BuffPreviewItem>() is not null || text.GetComponentInParent<BuffItem>() is not null || text.GetComponentInParent<SettingUI>() is not null || text.GetComponentInParent<TMP_Dropdown>() is not null || IsSettingsHeading(text) || IsSettingsTab(text);
     internal static void FitSettings(TMP_Text text)
     {
         text.text=CaptionLayoutState.Canonical(text.text);
@@ -219,6 +241,7 @@ internal sealed class ReportedControlLayout:MonoBehaviour
     }
     internal static bool ApplyLegacy(Text text)
     {
+        if(CraftingCaptionLayout.Apply(text))return true;
         if(!Localization.HasLanguage(Localization.CurrentLanguage) || string.IsNullOrWhiteSpace(text.text))return false;
         string current=text.text;
         if(current.StartsWith("QQ群",StringComparison.Ordinal) || current=="关注B站" || current.StartsWith("有任何问题欢迎联系我们",StringComparison.Ordinal))text.text=Localization.ResolveInline(current,current);

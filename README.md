@@ -1,4 +1,4 @@
-# Pathless Woods Mod Framework 0.1.2
+# Pathless Woods Mod Framework 0.1.3
 
 A framework for independent Pathless Woods mods, including an in-game mods menu, configuration editing, mod registration and localization services. This version targets Steam build 25836294, Windows x64 Unity2022.3.62f3 IL2CPP. Complete gameplay compatibility is not claimed.
 
@@ -15,7 +15,6 @@ To uninstall, remove dependent mods first, then remove BepInEx/plugins/PathlessW
 To hide the BepInEx console, set Enabled = false in the [Logging.Console] section of BepInEx/config/BepInEx.cfg and restart the game. File logging remains available in BepInEx/LogOutput.log. Set Enabled = true to restore the console.
 
 Source and SDK example: https://github.com/SuperMan4eg/PathlessWoodsModFramework (MIT license).
-
 
 
 

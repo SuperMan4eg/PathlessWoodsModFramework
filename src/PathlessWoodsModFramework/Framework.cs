@@ -45,14 +45,14 @@ public static class Localization
         return english ?? chinese ?? "";
     }
 }
-[BepInPlugin(Id,"Pathless Woods Mod Framework","0.1.2")]
+[BepInPlugin(Id,"Pathless Woods Mod Framework","0.1.3")]
 public sealed class FrameworkPlugin : BasePlugin
 {
     public const string Id = "superman4eg.pathlesswoods.framework";
     public override void Load()
     {
         Localization.Log=Log;
-        ModRegistry.Register(new(Id,"Pathless Woods Mod Framework","0.1.2","Mod discovery, in-game settings and localization services.","SuperMan4eg"));
+        ModRegistry.Register(new(Id,"Pathless Woods Mod Framework","0.1.3","Mod discovery, in-game settings and localization services.","SuperMan4eg"));
         FontSupport.EnableCyrillicFallback();
         AddComponent<FrameworkDispatcher>();
         AddComponent<ModsMenuController>();
@@ -63,6 +63,7 @@ public sealed class FrameworkPlugin : BasePlugin
         AddComponent<UIFormattingEvents>();
         LanguageHooks.Install(new Harmony(Id));
         NativeModsLauncher.Install(new Harmony(Id));
-        Log.LogInfo("Framework 0.1.2 initialized.");
+        CraftingCaptionLayout.Install(new Harmony(Id));
+        Log.LogInfo("Framework 0.1.3 initialized.");
     }
 }
